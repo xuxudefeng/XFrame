@@ -36,17 +36,13 @@ namespace XFrame.UI
         /// <param name="uiView">UIView对象</param>
         public static void Add(UIView uiView)
         {
-            string keyName = FormattingViewName(uiView);
-            if (UIViews.ContainsKey(keyName))
+            if (UIViews.ContainsKey(uiView.name))
             {
-                Debug.Log($"[{keyName}]已存在，无法创建");
-                uiView.ViewName = "null";
-                GameObject.Destroy(uiView.gameObject);
+                Debug.LogError($"[{uiView.name}]已存在，无法创建");
             }
             else
             {
-                UIViews.Add(keyName, uiView);
-                uiView.gameObject.name = $"[{keyName}]";
+                UIViews.Add(uiView.name, uiView);
             }
         }
         /// <summary>
@@ -55,19 +51,9 @@ namespace XFrame.UI
         /// <param name="uiView">UIView对象</param>
         public static void Remove(UIView uiView)
         {
-            string viewName = FormattingViewName(uiView);
-            if (UIViews.ContainsKey(viewName))
+            if (UIViews.ContainsKey(uiView.name))
             {
-                UIViews.Remove(viewName);
-                //string prefabPath = uiView.GetType().ToString();
-                //Addressables.Release(prefabPath);
-            }
-            else
-            {
-                if (!viewName.Contains("null"))
-                {
-                    Debug.Log($"[{viewName}]不存在，请确定已经创建该页面");
-                }
+                UIViews.Remove(uiView.name);
             }
         }
         /// <summary>
@@ -138,43 +124,6 @@ namespace XFrame.UI
 
 
         #region 加载
-        private static void LoadView<T>(string viewName, Action<T> action)
-            where T : UIView
-        {
-            if (string.IsNullOrEmpty(viewName)) return;
-            var view = GetView<T>(viewName);
-            // 页面池中存在页面直接取出，否则加载
-            if (view != null)
-            {
-                action(view);
-            }
-            else
-            {
-                // 获得脚本对应的约定路径
-                var prefabPath = $"{typeof(T).ToString()}";
-                // !!!!这个地方不能直接创建生成，需要把预设SetActive(false),否则名称无法指定，不能正常存入对象池
-                Addressables.LoadAssetAsync<GameObject>(prefabPath).Completed += x =>
-                {
-                    x.Result.SetActive(false);
-                    var prefabView = x.Result.GetComponent<T>();
-                    var go = Object.Instantiate(x.Result, GetUIRoot(prefabView.UIViewType));
-                    x.Result.SetActive(true);
-                    switch (prefabView.UIViewType)
-                    {
-                        case UIViewType.Panel:
-                            break;
-                        case UIViewType.Popup:
-                            go.AddComponent<DragPanel>();
-                            break;
-                        default:
-                            break;
-                    }
-                    view = go.GetComponent<T>();
-                    view.ViewName = viewName;
-                    action(view);
-                };
-            }
-        }
         /// <summary>
         /// 加载UIView预设
         /// </summary>
@@ -183,52 +132,19 @@ namespace XFrame.UI
         private static async Task<T> LoadViewAsync<T>(string viewName)
             where T : UIView
         {
-            // 格式化名称
-            string key = FormattingViewName<T>(viewName);
-            // 页面池中存在页面直接取出，否则加载
-            if (UIViews.ContainsKey(key))
-            {
-                return UIViews[key] as T;
-            }
-            else
-            {
-                // 获得脚本对应的约定路径
-                string prefabPath = $"{typeof(T).ToString()}";
-                // 获取预设，这个地方不能直接创建生成，需要把预设SetActive(false),否则名称无法指定，不能正常存入对象池
-                AsyncOperationHandle<GameObject> prefabHandle = Addressables.LoadAssetAsync<GameObject>(prefabPath);
-                await prefabHandle.Task;
-                prefabHandle.Result.SetActive(false);//否则名称无法指定，不能正常存入对象池，先执行了awake
-                T prefabView = prefabHandle.Result.GetComponent<T>();
-                GameObject go = GameObject.Instantiate(prefabHandle.Result, GetUIRoot(prefabView.UIViewType));
-                prefabHandle.Result.SetActive(true);
-                switch (prefabView.UIViewType)
-                {
-                    case UIViewType.Panel:
-                        break;
-                    case UIViewType.Popup:
-                        go.AddComponent<DragPanel>();
-                        break;
-                }
-                T view = go.GetComponent<T>();
-                view.ViewName = viewName;
-                return view;
-            }
+            string prefabPath = $"{typeof(T).ToString()}";
+            AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(prefabPath);
+            var prefab = await handle.Task;
+            prefab.SetActive(false);
+            // 实例化
+            var parent = GetUIRoot(prefab.GetComponent<T>().UIViewType);
+            var go = Object.Instantiate(prefab, parent);
+            Addressables.Release(handle);
+            var view = go.GetComponent<T>();
+            //view.ViewName = viewName;
+            return view;
         }
         #endregion
-        /// <summary>
-        /// 格式化UI名称
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="viewName"></param>
-        /// <returns></returns>
-        private static string FormattingViewName<T>(string viewName)
-        {
-            return $"{typeof(T).ToString()}-{viewName}";
-        }
-        private static string FormattingViewName(UIView uiView)
-        {
-            return $"{uiView.GetType().ToString()}-{uiView.ViewName}";
-        }
         /// <summary>
         /// 获取页面
         /// </summary>
@@ -238,7 +154,6 @@ namespace XFrame.UI
         public static T GetView<T>(string viewName = "Default")
             where T : UIView
         {
-            viewName = FormattingViewName<T>(viewName);
             if (UIViews.ContainsKey(viewName))
             {
                 return UIViews[viewName] as T;
@@ -249,21 +164,6 @@ namespace XFrame.UI
             }
         }
         /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="viewName">不能为空</param>
-        /// <param name="loadOver"></param>
-        public static void Show<T>(string viewName = "Default", Action<T> loadOver = null)
-           where T : UIView
-        {
-            LoadView<T>(viewName, view =>
-            {
-                loadOver?.Invoke(view);
-                view.Show();
-            });
-        }
-        /// <summary>
         /// 显示页面
         /// </summary>
         /// <typeparam name="T">页面脚本类型</typeparam>
@@ -271,10 +171,14 @@ namespace XFrame.UI
         public static async void ShowAsync<T>(string viewName = "Default")
             where T : UIView
         {
-            //viewName = FormattingViewName<T>(viewName);
-            Task<T> task = LoadViewAsync<T>(viewName);
-            await task;
-            task.Result.Show();
+            var view = GetView<T>(viewName);
+            if (view == null)
+            {
+                Task<T> task = LoadViewAsync<T>(viewName);
+                await task;
+                view = task.Result;
+            }
+            view.Show();
         }
         /// <summary>
         /// 隐藏页面
@@ -304,7 +208,7 @@ namespace XFrame.UI
             }
             else
             {
-                Show<T>(viewName);
+                ShowAsync<T>(viewName);
             }
         }
     }

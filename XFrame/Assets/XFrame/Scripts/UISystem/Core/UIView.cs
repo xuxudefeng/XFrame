@@ -13,14 +13,11 @@ namespace XFrame.UI
     {
         // 页面名称
         public string ViewName = "Default";
+        public object Data = null;
         public UIViewType UIViewType;
-        public Action OnShow;
-        public Action OnHide;
-        [HideInInspector]
-        public RectTransform rectTransform;
         public virtual void Awake()
         {
-            rectTransform = GetComponent<RectTransform>();
+            Debug.Log("Awake()");
             UIManager.Add(this);
         }
         public virtual void OnDestroy()
@@ -35,7 +32,6 @@ namespace XFrame.UI
             Refresh();
             if (gameObject.activeSelf) return;
             gameObject.SetActive(true);
-            OnShow?.Invoke();
             // 设置层级到最上层
             transform.SetAsLastSibling();
         }
@@ -47,7 +43,6 @@ namespace XFrame.UI
             //显示的情况下才隐藏
             if (!gameObject.activeSelf) return;
             gameObject.SetActive(false);
-            OnHide?.Invoke();
         }
         public void ShowHide()
         {
@@ -64,17 +59,28 @@ namespace XFrame.UI
         }
 
     }
-    public enum UIViewType
-    {
-        Panel,
-        Popup,
-    }
 
-    //TODO  修改名字为IData 新增GetData方法
-    public interface ISetData<T>
+    /// <summary>
+    /// UIView-Data
+    /// </summary>
+    /// <typeparam name="TModel"></typeparam>
+    /// <typeparam name="TReactiveModel"></typeparam>
+    public class UIView<TModel, TReactiveModel> : UIView
+        where TReactiveModel : IViewModel<TModel>, new()
+        //where TModel : class
     {
-        //新增属性GetData  SetData 时修改此属性的值
-        //T Data { get; set; }
-        void SetData(T t);
+        /// <summary>
+        /// 数据
+        /// </summary>
+        protected TReactiveModel DataSource { get; private set; } = new TReactiveModel();
+        /// <summary>
+        /// 显示
+        /// </summary>
+        /// <param name="data"></param>
+        public void Show(TModel data)
+        {
+            DataSource.SetData(data);
+            base.Show();
+        }
     }
 }

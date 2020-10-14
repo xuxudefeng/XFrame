@@ -22,7 +22,7 @@ public class Model
 
 }
 
-public class ModelReactive : ISetData<Model>
+public class ModelReactive : IViewModel<Model>
 {
 	private Model Data { get; set; } = new Model();
 	/// <summary>

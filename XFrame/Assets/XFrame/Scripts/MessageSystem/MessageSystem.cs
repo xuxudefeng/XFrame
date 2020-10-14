@@ -8,9 +8,9 @@ using System.Collections.Generic;
 public class MessageSystem
 {
     #region 消息表
-    private static Dictionary<Msg, Delegate> eventTable = new Dictionary<Msg, Delegate>();
+    private static Dictionary<short, Delegate> eventTable = new Dictionary<short, Delegate>();
 
-    public static void AddListener(Msg eventType, Action handler)
+    public static void AddListener(short eventType, Action handler)
     {
         // 加锁保证线程安全
         lock (eventTable)
@@ -23,7 +23,7 @@ public class MessageSystem
         }
     }
 
-    public static void RemoveListener(Msg eventType, Action handler)
+    public static void RemoveListener(short eventType, Action handler)
     {
         lock (eventTable)
         {
@@ -39,7 +39,7 @@ public class MessageSystem
         }
     }
 
-    public static void Broadcast(Msg eventType)
+    public static void Broadcast(short eventType)
     {
         Delegate d;
         if (eventTable.TryGetValue(eventType, out d))
@@ -53,7 +53,7 @@ public class MessageSystem
         }
     }
 
-    public static void AddListener<T>(Msg eventType, Action<T> handler)
+    public static void AddListener<T>(short eventType, Action<T> handler)
     {
         lock (eventTable)
         {
@@ -66,7 +66,7 @@ public class MessageSystem
         }
     }
 
-    public static void RemoveListener<T>(Msg eventType, Action<T> handler)
+    public static void RemoveListener<T>(short eventType, Action<T> handler)
     {
         lock (eventTable)
         {
@@ -82,7 +82,7 @@ public class MessageSystem
         }
     }
 
-    public static void Broadcast<T>(Msg eventType, T arg1)
+    public static void Broadcast<T>(short eventType, T arg1)
     {
         Delegate d;
         if (eventTable.TryGetValue(eventType, out d))
@@ -96,7 +96,7 @@ public class MessageSystem
         }
     }
 
-    public static void AddListener<T, U>(Msg eventType, Action<T, U> handler)
+    public static void AddListener<T, U>(short eventType, Action<T, U> handler)
     {
         lock (eventTable)
         {
@@ -108,7 +108,7 @@ public class MessageSystem
         }
     }
 
-    public static void RemoveListener<T, U>(Msg eventType, Action<T, U> handler)
+    public static void RemoveListener<T, U>(short eventType, Action<T, U> handler)
     {
         lock (eventTable)
         {
@@ -124,7 +124,7 @@ public class MessageSystem
         }
     }
 
-    public static void Broadcast<T, U>(Msg eventType, T arg1, U arg2)
+    public static void Broadcast<T, U>(short eventType, T arg1, U arg2)
     {
         Delegate d;
         if (eventTable.TryGetValue(eventType, out d))
@@ -138,54 +138,4 @@ public class MessageSystem
         }
     }
     #endregion
-    
-
-}
-
-public enum Msg
-{
-    /// <summary>
-    /// 选中素材信息按钮
-    /// </summary>
-    SelectedAssetInfoToggle,
-    /// <summary>
-    /// 反选素材信息按钮
-    /// </summary>
-    UnSelectedAssetInfoToggle,
-    /// <summary>
-    /// 结束绘制
-    /// </summary>
-    DrawingCancel,
-    /// <summary>
-    /// 完成绘制
-    /// </summary>
-    DrawingFinish,
-    /// <summary>
-    /// 刷新总平面图
-    /// </summary>
-    RefreshSitePlans,
-    /// <summary>
-    /// 刷新楼层
-    /// </summary>
-    RefreshBuildingFloor,
-    /// <summary>
-    /// 创建楼层
-    /// </summary>
-    CreateFloor,
-    /// <summary>
-    /// 打开图片文件
-    /// </summary>
-    OpenFileImage,
-    /// <summary>
-    /// 选择结束
-    /// </summary>
-    OnSelectOver,
-    /// <summary>
-    /// 选择素材
-    /// </summary>
-    SelectAssetIcon,
-    /// <summary>
-    /// 消防要素toggle按钮值变化
-    /// </summary>
-    ItemToggleValueChanged
 }

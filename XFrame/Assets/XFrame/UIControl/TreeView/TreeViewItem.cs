@@ -43,13 +43,13 @@ namespace XTreeView
             {
                 Controler.ClickItem(gameObject);
                 //SelectChildren(this);
-                MessageSystem.Broadcast(Msg.SelectAssetIcon, GetAllChildrensId(this));
+                //MessageSystem.Broadcast(Msg.SelectAssetIcon, GetAllChildrensId(this));
             });
         }
 
         private void ItemToggleValueChanged(bool b)
         {
-            MessageSystem.Broadcast(Msg.ItemToggleValueChanged, Data.Id, b);
+            //MessageSystem.Broadcast(Msg.ItemToggleValueChanged, Data.Id, b);
             ChangeChildrenToggle(this,b);
         }
         /// <summary>

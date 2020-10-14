@@ -42,18 +42,18 @@ public class MessageBox : UIView
 
     public static void Show(string message)
     {
-        UIManager.Show<MessageBox>(Guid.NewGuid().ToString(), view =>
-        {
-            view.SetContentNone(message);
-            //GameManager.Instance.Messages.Enqueue(view);
-        });
+        //UIManager.Show<MessageBox>(Guid.NewGuid().ToString(), view =>
+        //{
+        //    view.SetContentNone(message);
+        //    //GameManager.Instance.Messages.Enqueue(view);
+        //});
     }
 
 
     public void DoAnimation()
     {
-        rectTransform.SetAnchor(AnchorPresets.TopCenter);
-        rectTransform.DOScale(1, 0.2f);
+        //rectTransform.SetAnchor(AnchorPresets.TopCenter);
+        //rectTransform.DOScale(1, 0.2f);
         foreach (var item in messageBoxes)
         {
             RectTransform itemRect = item.transform as RectTransform;

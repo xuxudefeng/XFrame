@@ -8,7 +8,8 @@ public class Main : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UIManager.Show<UIViewStart>();
+        UIManager.ShowAsync<UIViewStart>();
+        Debug.Log("abc");
     }
 
     // Update is called once per frame
