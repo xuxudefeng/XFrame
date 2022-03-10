@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using XFrame.UI;
 using Application = UnityEngine.Application;
 using Button = UnityEngine.UI.Button;
 

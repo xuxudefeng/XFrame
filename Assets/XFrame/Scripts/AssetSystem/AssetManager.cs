@@ -8,13 +8,12 @@ using UnityEngine.Events;
 using UnityEngine.U2D;
 using UnityEngine.Networking;
 using System.Text.RegularExpressions;
-using XFrame.UI;
 /// <summary>
 /// 资源系统
 /// 徐振升 2019-04-17
 /// 资源管理模块
 /// </summary>
-public class AssetManager1 : Singleton<AssetManager>
+public class AssetManager : Singleton<AssetManager>
 {
     // 精灵对象池
     private Dictionary<string, Sprite> Sprites = new Dictionary<string, Sprite>();

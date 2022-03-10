@@ -15,8 +15,11 @@ EditorBuildSettings:
     path: Assets/XFrame/Scripts/OpenCamera/OpenCamera.unity
     guid: c372414a051ae0443b44fed522d459e0
   - enabled: 1
-    path: Assets/Scripts/OpcTest.unity
+    path: Assets/XFrame/OpcUa/OpcUa.unity
     guid: 36b53ae66ae21634589364281dcbcdf5
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: dcce9e27733b9a044aabb2b4bbf83f75,
       type: 2}

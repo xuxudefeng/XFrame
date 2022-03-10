@@ -21,20 +21,6 @@ MonoBehaviour:
     m_Address: UIViewWebCamera
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 479c26d4fe871514a9b880fa0785d7b4
-    m_Address: MessageBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: b72488bca8dd9114eac0a0eb43abed59
-    m_Address: UIViewStart
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0a53dd1e01665ab43a6ddd65855dfeca, type: 2}
   m_SchemaSet:

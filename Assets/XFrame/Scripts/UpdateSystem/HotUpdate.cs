@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using XFrame.UI;
 /// <summary>
 /// 资源热更新脚本
 /// </summary>
