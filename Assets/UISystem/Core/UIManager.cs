@@ -7,8 +7,14 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+using System.Threading.Tasks;
 
 
+public enum UIViewName
+{
+    MainView,
+    RankingView
+}
 /// <summary>
 ///  UI管理
 ///  作者：徐振升
@@ -21,12 +27,13 @@ using Object = UnityEngine.Object;
 /// </summary>
 public class UIManager : Singleton<UIManager>
 {
+
     public static Canvas canvas = null;
     public static EventSystem eventSystem = null;
     /// <summary>
     /// 已经创建的UIView对象引用
     /// </summary>
-    public static Dictionary<string,UIView> Views = new Dictionary<string,UIView>();
+    public static Dictionary<string, IView> Views = new Dictionary<string, IView>();
 
     public override void Awake()
     {
@@ -34,6 +41,10 @@ public class UIManager : Singleton<UIManager>
         InitCanvas();
         InitEventSystem();
         InitNode();
+    }
+    public void InitView()
+    {
+        
     }
 
     // 创建新的UI目录
@@ -89,12 +100,7 @@ public class UIManager : Singleton<UIManager>
             }
         }
     }
-
-    /// <summary>
-    /// 获取子目录
-    /// </summary>
-    /// <param name="viewType"></param>
-    /// <returns></returns>
+    // 获取子目录
     public static Transform GetSubroot(UIViewType viewType)
     {
         Transform root = canvas.transform.Find(viewType.ToString());
@@ -103,11 +109,11 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// 获得一个名称第一个为name的T
     /// </summary>
-    public T GetView<T>(string viewName = "Default")
-        where T : UIView
+    public static T GetViewByName<T>(string viewName)
+        where T : class, IView
     {
         // 直接使用Firest,数组为空时会引发异常
-        UIView view;
+        IView view;
         if (Views.TryGetValue(viewName, out view))
         {
             return view as T;
@@ -122,10 +128,10 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <param name="viewName"></param>
     /// <param name="action"></param>
-    public void ShowView<T>(string viewName = "Default", Action<T> action = null)
-        where T : UIView
+    public static void ShowViewByName<T>(string viewName,Action<T> action = null)
+        where T : MonoBehaviour, IView
     {
-        var view = GetView<T>(viewName);
+        var view = GetViewByName<T>(viewName);
         if (view != null)
         {
             action?.Invoke(view);
@@ -133,7 +139,7 @@ public class UIManager : Singleton<UIManager>
         }
         else
         {
-            CreateView<T>(viewName, action);
+            CreateViewByName<T>(viewName, action);
         }
     }
     /// <summary>
@@ -141,11 +147,11 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="viewName"></param>
-    public void HideView<T>(string viewName = "Default")
-        where T : UIView
+    public static void HideViewByName<T>(string viewName)
+        where T : MonoBehaviour, IView
     {
-        UIView view;
-        if (Views.TryGetValue(viewName,out view))
+        IView view;
+        if (Views.TryGetValue(viewName, out view))
         {
             view.Hide();
         }
@@ -155,8 +161,8 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <param name="viewName"></param>
     /// <returns></returns>
-    private void CreateView<T>(string viewName, Action<T> action = null)
-        where T : UIView
+    private static void CreateViewByName<T>(string viewName, Action<T> action = null)
+        where T : MonoBehaviour, IView
     {
         string key = $"{typeof(T).ToString()}";
         AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
@@ -186,11 +192,36 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
-    public void DestroyView<T>(string name = "Default")
-        where T:UIView
+    public static void DestroyView<T>(string name)
+        where T : MonoBehaviour, IView
     {
-        var view = GetView<T>(name);
+        var view = GetViewByName<T>(name);
         Addressables.Release(view);
+    }
+    /// <summary>
+    /// 异步创建页面
+    /// </summary>
+    /// <param name="viewName"></param>
+    /// <returns></returns>
+    public static async Task<T> CreateViewAsync<T>(string viewName)
+        where T : MonoBehaviour, IView
+    {
+        string key = $"{typeof(T).ToString()}";
+        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
+        await handle.Task;
+        T view = null;
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            view = handle.Result.GetComponent<T>();
+            view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
+            view.gameObject.name = viewName;
+            view.Hide();
+        }
+        else
+        {
+            Debug.LogError($"{key}创建失败！");
+        }
+        return view;
     }
 }
 

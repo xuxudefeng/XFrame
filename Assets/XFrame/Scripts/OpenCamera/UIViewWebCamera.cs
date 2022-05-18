@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Application = UnityEngine.Application;
 using Button = UnityEngine.UI.Button;
 
-public class UIViewWebCamera : UIView
+public class UIViewWebCamera : MonoBehaviour
 {
     public string DeviceName;
     public Vector2 CameraSize;
@@ -31,7 +31,6 @@ public class UIViewWebCamera : UIView
     /// </summary>  
     private void Awake()
     {
-        base.Awake();
         BtnOK.gameObject.SetActive(false);
         BtnCancel.gameObject.SetActive(false);
         Btn1.gameObject.SetActive(true);
@@ -53,7 +52,7 @@ public class UIViewWebCamera : UIView
                 Test();
                 Test = null;
             }
-            Hide();
+       
         });
         BtnCancel.onClick.AddListener(() =>
         {
@@ -62,7 +61,7 @@ public class UIViewWebCamera : UIView
             BtnCancel.gameObject.SetActive(false);
             Btn1.gameObject.SetActive(true);
         });
-        BtnClose.onClick.AddListener(Hide);
+        //BtnClose.onClick.AddListener(Hide);
         ToggleChange.onValueChanged.AddListener(b =>
         {
             Stop();
