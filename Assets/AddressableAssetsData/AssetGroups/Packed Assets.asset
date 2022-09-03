@@ -10,24 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Packed Assets
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
+  m_GroupName: Packed Assets
   m_Data:
     m_SerializedData: []
-  m_GUID: f128836a5003fe14a9d6ea26be182cee
-  m_SerializeEntries:
-  - m_GUID: 19e659f206608fe4ab2fafca954b4960
-    m_Address: UIViewWebCamera
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-  - m_GUID: 0b5bb4567b748cf41be4685c2d197197
-    m_Address: MainView
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+  m_GUID: 0cbd43cac6055d040babb2ae5c1ae0e4
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0a53dd1e01665ab43a6ddd65855dfeca, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: fa5c05e062e1eca48a79cce8a873c9f6, type: 2}
-    - {fileID: 11400000, guid: 15c979a79e42a564d9ffb83b6d93fd05, type: 2}
+    - {fileID: 11400000, guid: 0f4a12ec324008b41a3070da10037e54, type: 2}
+    - {fileID: 11400000, guid: a43140cf7c65a2547a2424e7ea314943, type: 2}

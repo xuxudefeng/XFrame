@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [ConfigPath(@"DataAcquisitionTool.ini")]
 public static class Config
@@ -14,11 +15,9 @@ public static class Config
     public static string IPAddress { get; set; } = DefaultIPAddress;
     public static int Port { get; set; } = DefaultPort;
     public static TimeSpan TimeOutDuration { get; set; } = TimeSpan.FromSeconds(15);
-
-
-    public static string GetAPIAddress(string api)
-    {
-        return $"http://{DefaultIPAddress}:{DefaultPort}{api}";
-    }
-
+    public static DateTime CreateTime { get;set; } = DateTime.Now;
+    public static Color NewColor { get; set; } = Color.red;
+    public static Color OldColor { get; set; } = Color.green;
+    public static Vector2 Vector2 { get; set; } = new Vector2(100f, 100f);
+    public static Vector3 Vector3 { get; set; } = new Vector3(100f, 100f,100f);
 }

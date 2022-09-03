@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 /// <summary>
 /// 配置阅读器
 /// </summary>
-public static class ConfigReader
+public static class ConfigManager
 {
     //报头正则表达式
     private static readonly Regex HeaderRegex = new Regex(@"^\[(?<Header>.+)\]$", RegexOptions.Compiled);
@@ -122,7 +122,7 @@ public static class ConfigReader
 
             if (lastSection == null) continue;
 
-            MethodInfo method = typeof(ConfigReader).GetMethod("Read", new[] { typeof(Type), typeof(string), typeof(string), property.PropertyType });
+            MethodInfo method = typeof(ConfigManager).GetMethod("Read", new[] { typeof(Type), typeof(string), typeof(string), property.PropertyType });
 
             property.SetValue(ob, method.Invoke(null, new[] { type, lastSection, property.Name, property.GetValue(ob) }));
         }
@@ -148,7 +148,7 @@ public static class ConfigReader
 
             if (lastSection == null) continue;
 
-            MethodInfo method = typeof(ConfigReader).GetMethod("Write", new[] { typeof(Type), typeof(string), typeof(string), property.PropertyType });
+            MethodInfo method = typeof(ConfigManager).GetMethod("Write", new[] { typeof(Type), typeof(string), typeof(string), property.PropertyType });
 
             method.Invoke(ob, new[] { type, lastSection, property.Name, property.GetValue(ob) });
         }
@@ -414,7 +414,7 @@ public static class ConfigReader
         return value;
     }
 
-    public static Point Read(Type type, string section, string key, Point value)
+    public static Vector2 Read(Type type, string section, string key, Vector2 value)
     {
         string entry;
 
@@ -425,14 +425,14 @@ public static class ConfigReader
             int x, y;
 
             if (data.Length == 2 && int.TryParse(data[0], out x) && int.TryParse(data[1], out y))
-                return new Point(x, y);
+                return new Vector2(x, y);
         }
 
-        ConfigContents[type][section][key] = $"{value.X}, {value.Y}";
+        ConfigContents[type][section][key] = $"{value.x}, {value.y}";
 
         return value;
     }
-    public static Size Read(Type type, string section, string key, Size value)
+    public static Vector3 Read(Type type, string section, string key, Vector3 value)
     {
         string entry;
 
@@ -440,31 +440,13 @@ public static class ConfigReader
         {
             string[] data = entry.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            int width, height;
+            int x, y,z;
 
-            if (data.Length == 2 && int.TryParse(data[0], out width) && int.TryParse(data[1], out height))
-                return new Size(width, height);
+            if (data.Length == 3 && int.TryParse(data[0], out x) && int.TryParse(data[1], out y) && int.TryParse(data[2], out z))
+                return new Vector3(x, y,z);
         }
 
-        ConfigContents[type][section][key] = $"{value.Width}, {value.Height}";
-
-        return value;
-    }
-    public static SizeF Read(Type type, string section, string key, SizeF value)
-    {
-        string entry;
-
-        if (TryGetEntry(type, section, key, out entry))
-        {
-            string[] data = entry.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-            float width, height;
-
-            if (data.Length == 2 && float.TryParse(data[0], out width) && float.TryParse(data[1], out height))
-                return new SizeF(width, height);
-        }
-
-        ConfigContents[type][section][key] = $"{value.Width}, {value.Height}";
+        ConfigContents[type][section][key] = $"{value.x}, {value.y},{value.z}";
 
         return value;
     }
@@ -517,15 +499,15 @@ public static class ConfigReader
                 int g = int.Parse(match.Groups["G"].Value);
                 int b = int.Parse(match.Groups["B"].Value);
 
-                return Color.FromArgb(
-                    Math.Min(Byte.MaxValue, Math.Max(Byte.MinValue, a)),
+                return new Color(
                     Math.Min(Byte.MaxValue, Math.Max(Byte.MinValue, r)),
                     Math.Min(Byte.MaxValue, Math.Max(Byte.MinValue, g)),
-                    Math.Min(Byte.MaxValue, Math.Max(Byte.MinValue, b)));
+                    Math.Min(Byte.MaxValue, Math.Max(Byte.MinValue, b)),
+                    Math.Min(Byte.MaxValue, Math.Max(Byte.MinValue, a)));
             }
         }
 
-        ConfigContents[type][section][key] = $"[A:{value.A}, R:{value.R}, G:{value.G}, B:{value.B}]";
+        ConfigContents[type][section][key] = $"[A:{value.a}, R:{value.r}, G:{value.g}, B:{value.b}]";
 
         return value;
     }
@@ -537,6 +519,7 @@ public static class ConfigReader
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("Boolean：{0}", value));
     }
 
     public static void Write(Type type, string section, string key, Byte value)
@@ -544,24 +527,28 @@ public static class ConfigReader
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("Byte：{0}", value));
     }
     public static void Write(Type type, string section, string key, Int16 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("Int16：{0}", value));
     }
     public static void Write(Type type, string section, string key, Int32 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("Int32：{0}", value));
     }
     public static void Write(Type type, string section, string key, Int64 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("Int64：{0}", value));
     }
 
     public static void Write(Type type, string section, string key, SByte value)
@@ -569,24 +556,28 @@ public static class ConfigReader
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("SByte：{0}", value));
     }
     public static void Write(Type type, string section, string key, UInt16 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("UInt16：{0}", value));
     }
     public static void Write(Type type, string section, string key, UInt32 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("UInt32：{0}", value));
     }
     public static void Write(Type type, string section, string key, UInt64 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("UInt64：{0}", value));
     }
 
     public static void Write(Type type, string section, string key, Single value)
@@ -594,18 +585,21 @@ public static class ConfigReader
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString(CultureInfo.InvariantCulture);
+        Debug.Log(string.Format("Single：{0}", value));
     }
     public static void Write(Type type, string section, string key, Double value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString(CultureInfo.InvariantCulture);
+        Debug.Log(string.Format("Double：{0}", value));
     }
     public static void Write(Type type, string section, string key, Decimal value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString(CultureInfo.InvariantCulture);
+        Debug.Log(string.Format("Decimal：{0}", value));
     }
 
     public static void Write(Type type, string section, string key, Char value)
@@ -613,25 +607,29 @@ public static class ConfigReader
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("Char：{0}", value));
     }
     public static void Write(Type type, string section, string key, String value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value;
+        Debug.Log(string.Format("String：{0}", value));
     }
 
-    public static void Write(Type type, string section, string key, Point value)
+    public static void Write(Type type, string section, string key, Vector2 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
-        ConfigContents[type][section][key] = $"{value.X}, {value.Y}";
+        ConfigContents[type][section][key] = $"{value.x}, {value.y}";
+        Debug.Log(string.Format("Vector2：{0}", value));
     }
-    public static void Write(Type type, string section, string key, Size value)
+    public static void Write(Type type, string section, string key, Vector3 value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
-        ConfigContents[type][section][key] = $"{value.Width}, {value.Height}";
+        ConfigContents[type][section][key] = $"{value.x}, {value.y},{value.z}";
+        Debug.Log(string.Format("Vector3：{0}", value));
     }
 
     public static void Write(Type type, string section, string key, TimeSpan value)
@@ -639,18 +637,21 @@ public static class ConfigReader
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString();
+        Debug.Log(string.Format("TimeSpan：{0}", value));
     }
     public static void Write(Type type, string section, string key, DateTime value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
         ConfigContents[type][section][key] = value.ToString(CultureInfo.InvariantCulture);
+        Debug.Log(string.Format("DateTime：{0}", value));
     }
     public static void Write(Type type, string section, string key, Color value)
     {
         if (!ConfigContents[type].ContainsKey(section)) ConfigContents[type][section] = new Dictionary<string, string>();
 
-        ConfigContents[type][section][key] = $"[A:{value.A}, R:{value.R}, G:{value.G}, B:{value.B}]";
+        ConfigContents[type][section][key] = $"[A:{value.a}, R:{value.r}, G:{value.g}, B:{value.b}]";
+        Debug.Log(string.Format("Color：{0}", value));
     }
     #endregion
 }

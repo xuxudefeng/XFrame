@@ -14,6 +14,10 @@ public class ExampleSceneManagerController : MonoBehaviour
     public InputField Input8;
     public InputField Content;
 
+    private void Awake()
+    {
+        SaveSystemRawExample();
+    }
     public void Save()
     {
         SaveSystemWriter.Create("Inputs")
@@ -45,7 +49,8 @@ public class ExampleSceneManagerController : MonoBehaviour
 
         string text = SaveSystemRaw.LoadString("TextFile.txt");
         byte[] bytes = SaveSystemRaw.LoadBytes("BytesFile.txt");
-
+        Debug.Log(text);
+        Debug.Log(bytes[0]);
     }
 
     public void SaveSystemReaderExample()

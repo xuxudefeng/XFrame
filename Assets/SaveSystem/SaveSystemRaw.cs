@@ -90,7 +90,7 @@ namespace SaveSystem
         /// <param name="content">The byte array to save</param>
         public static void SaveBytes(string filename, byte[] content)
         {
-            if (FileAccess.SaveBytes(filename, true, content))
+            if (!FileAccess.SaveBytes(filename, true, content))
             {
                 throw new SaveSystemException("Failed to write to file");
             }

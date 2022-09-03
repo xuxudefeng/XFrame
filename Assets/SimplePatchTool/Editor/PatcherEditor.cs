@@ -16,11 +16,11 @@ namespace SimplePatchToolUnity
 		private ProjectManager project;
 		private bool? projectExists = null;
 
-		[MenuItem( "Tools/Simple Patch Tool" )]
+		[MenuItem( "工具/补丁工具" )]
 		private static void Initialize()
 		{
 			PatcherEditor window = GetWindow<PatcherEditor>();
-			window.titleContent = new GUIContent("修补程序");
+			window.titleContent = new GUIContent("补丁工具");
 			window.minSize = new Vector2( 300f, 310f );
 
 			window.Show();
@@ -46,7 +46,7 @@ namespace SimplePatchToolUnity
 			GUILayout.Space( 5f );
 
 			EditorGUI.BeginChangeCheck();
-			projectRootPath = PathField( "Project directory: ", projectRootPath, true );
+			projectRootPath = PathField( "项目目录: ", projectRootPath, true );
 			if( EditorGUI.EndChangeCheck() )
 				CheckProjectExists();
 
@@ -54,7 +54,7 @@ namespace SimplePatchToolUnity
 
 			GUI.enabled = ( project == null || !project.IsRunning ) && projectExists.HasValue && !projectExists.Value;
 
-			if( GUILayout.Button( "Create Project", GUILayout.Height( 30 ) ) )
+			if( GUILayout.Button( "创建项目", GUILayout.Height( 30 ) ) )
 			{
 				project = new ProjectManager( projectRootPath );
 				project.CreateProject();
@@ -68,28 +68,28 @@ namespace SimplePatchToolUnity
 
 				CheckProjectExists();
 
-				EditorUtility.DisplayDialog( "Self Patcher", "If this is a self patching app (i.e. this app will update itself), you'll need to generate a self patcher. See README for more info.", "Got it!" );
+				EditorUtility.DisplayDialog( "自我修补程序", "如果这是一个自我修补应用程序（即此应用程序将自行更新），您需要生成一个自我修补程序。", "知道了！");
 			}
 
 			GUI.enabled = ( project == null || !project.IsRunning ) && projectExists.HasValue && projectExists.Value;
 
-			if( GUILayout.Button( "Generate Patch", GUILayout.Height( 30 ) ) )
+			if( GUILayout.Button( "生成补丁", GUILayout.Height( 30 ) ) )
 			{
 				project = new ProjectManager( projectRootPath );
 				if( project.GeneratePatch() )
 				{
-					Debug.Log( "<b>Operation started</b>" );
+					Debug.Log("<b>操作开始</b>");
 
 					EditorApplication.update -= OnUpdate;
 					EditorApplication.update += OnUpdate;
 				}
 				else
-					Debug.LogWarning( "<b>Couldn't start the operation. Maybe it is already running?</b>" );
+					Debug.LogWarning("<b>无法开始操作。 也许它已经在运行?</b>");
 			}
 
 			DrawHorizontalLine();
 
-			if( GUILayout.Button( "Update Download Links", GUILayout.Height( 30 ) ) )
+			if( GUILayout.Button("更新下载链接", GUILayout.Height( 30 ) ) )
 			{
 				project = new ProjectManager( projectRootPath );
 				project.UpdateDownloadLinks();
@@ -100,39 +100,36 @@ namespace SimplePatchToolUnity
 
 			DrawHorizontalLine();
 
-			if( GUILayout.Button( "Sign XMLs", GUILayout.Height( 30 ) ) )
+			if( GUILayout.Button("签名XMLs", GUILayout.Height( 30 ) ) )
 			{
 				ProjectManager project = new ProjectManager( projectRootPath );
 				SecurityUtils.SignXMLsWithKeysInDirectory( project.GetXMLFiles( true, true ), project.utilitiesPath );
 
-				EditorUtility.DisplayDialog( "Security", "Don't share your private key with unknown parties!", "Got it!" );
-				Debug.Log( "<b>Operation successful...</b>" );
+				EditorUtility.DisplayDialog("安全", "不要与未知方共享您的私钥！", "知道了！");
+				Debug.Log("<b>操作成功...</b>");
 			}
 
-			if( GUILayout.Button( "Verify Signed XMLs", GUILayout.Height( 30 ) ) )
+			if( GUILayout.Button("验证签名XMLs", GUILayout.Height( 30 ) ) )
 			{
 				string[] invalidXmls;
 
 				ProjectManager project = new ProjectManager( projectRootPath );
 				if( !SecurityUtils.VerifyXMLsWithKeysInDirectory( project.GetXMLFiles( true, true ), project.utilitiesPath, out invalidXmls ) )
 				{
-					Debug.Log( "<b>The following XMLs could not be verified:</b>" );
+					Debug.Log("<b>无法验证以下 XML：</b>");
 					for( int i = 0; i < invalidXmls.Length; i++ )
 						Debug.Log( invalidXmls[i] );
 				}
 				else
-					Debug.Log( "<b>All XMLs are verified...</b>" );
+					Debug.Log("<b>所有 XML 都经过验证...</b>");
 			}
 
 			GUI.enabled = true;
 
 			DrawHorizontalLine();
 
-			if( GUILayout.Button( "Help", GUILayout.Height( 25 ) ) )
+			if( GUILayout.Button( "帮助", GUILayout.Height( 25 ) ) )
 				Application.OpenURL( "https://github.com/yasirkula/UnitySimplePatchTool/wiki" );
-
-			if( GUILayout.Button( "Open Legacy Window", GUILayout.Height( 25 ) ) )
-				PatcherEditorLegacy.Initialize();
 
 			GUILayout.EndVertical();
 			GUILayout.EndScrollView();
@@ -146,14 +143,16 @@ namespace SimplePatchToolUnity
 				return;
 			}
 
-			string log = project.FetchLog();
-			while( log != null )
-			{
-				Debug.Log( log );
-				log = project.FetchLog();
-			}
+            string log = project.FetchLog();
+			bool isCancel = EditorUtility.DisplayCancelableProgressBar("匹配资源中", log, 1);
+			//while (log != null)
+   //         {
+   //             Debug.Log(log);
+				
+			//	log = project.FetchLog();
+   //         }
 
-			if( !project.IsRunning )
+			if ( !project.IsRunning )
 			{
 				if( project.Result == PatchResult.Failed )
 					Debug.Log("<b>操作失败...</b>");
@@ -161,6 +160,7 @@ namespace SimplePatchToolUnity
 					Debug.Log("<b>操作成功...</b>");
 
 				project = null;
+				EditorUtility.ClearProgressBar();
 				EditorApplication.update -= OnUpdate;
 			}
 		}

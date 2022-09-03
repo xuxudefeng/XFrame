@@ -1,44 +1,26 @@
 ﻿using AnKuchen.Map;
 using System;
 using UnityEngine;
-public interface IView
-{
-    public UIViewType UIViewType { get; set; }
-    public UIViewName UIViewName { get; set; }
-    public void Show();
-    public void Hide();
-    public void Refresh();
-}
-public interface IView<T, V> : IView
-{
-    public T Data { get; set; }
-    public V UI { get; set; }
-    public void Show(T data);
-    public void SetData(T data);
-}
-/// <summary>
-/// UI
-/// </summary>
-/// <typeparam name="T">属性Data的类型</typeparam>
-/// <typeparam name="V">属性UI的类型</typeparam>
-public abstract class UIView<T, V> : UICache, IView<T, V>
-    where T : new()
-    where V : IMappedObject, new()
-{
-    public T Data { get; set; }
-    public V UI { get; set; }
-    public UIViewType UIViewType { get; set; }
-    public UIViewName UIViewName { get; set; }
 
+[RequireComponent(typeof(UICache))]
+public abstract class UIView : MonoBehaviour
+{
+    public UICache UICache
+    {
+        get
+        {
+            return GetComponent<UICache>();
+        }
+    }
+    public UIViewType UIViewType;
+    public UIViewName UIViewName { get; set; }
     public virtual void Awake()
     {
-        Data = new T();
-        UI = new V();
-        UI.Initialize(this);
+        UIManager.Views.Add(name,this);
     }
     public virtual void Destroy()
     {
-
+        UIManager.Views.Remove(name);
     }
     /// <summary>
     /// 显示
@@ -51,6 +33,28 @@ public abstract class UIView<T, V> : UICache, IView<T, V>
         // 设置层级到最上层
         transform.SetAsLastSibling();
     }
+    /// <summary>
+    /// 隐藏
+    /// </summary>
+    public virtual void Hide()
+    {
+        //显示的情况下才隐藏
+        if (!gameObject.activeSelf) return;
+        gameObject.SetActive(false);
+    }
+    /// <summary>
+    /// 刷新
+    /// </summary>
+    public abstract void Refresh();
+}
+
+/// <summary>
+/// UI
+/// </summary>
+/// <typeparam name="T">属性Data的类型</typeparam>
+public abstract class UIView<T> : UIView
+{
+    public T Data { get; set; }
     /// <summary>
     /// 根据数据显示页面
     /// </summary>
@@ -69,24 +73,4 @@ public abstract class UIView<T, V> : UICache, IView<T, V>
         Data = data;
         Refresh();
     }
-    /// <summary>
-    /// 隐藏
-    /// </summary>
-    public virtual void Hide()
-    {
-        //显示的情况下才隐藏
-        if (!gameObject.activeSelf) return;
-        gameObject.SetActive(false);
-    }
-    public void ShowHide()
-    {
-        gameObject.SetActive(!gameObject.activeSelf);
-        // 设置层级到最上层
-        transform.SetAsLastSibling();
-    }
-    /// <summary>
-    /// 刷新
-    /// </summary>
-    public abstract void Refresh();
-
 }

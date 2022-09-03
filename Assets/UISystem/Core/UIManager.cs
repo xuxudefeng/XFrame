@@ -18,36 +18,33 @@ public enum UIViewName
 /// <summary>
 ///  UI管理
 ///  作者：徐振升
-///  最后更新：2021-11-27
-///  联系方式：QQ:359059686
-///  遵循规则=>约定既是配置
-///  约定对象：需要UIManager管理的UIView预设
-///  约定1：使用寻址系统加载对象
-///  约定2：UIView的预设名字、脚本名称、寻址Key相同
+///  最后更新：2022-05-31
 /// </summary>
-public class UIManager : Singleton<UIManager>
+public class UIManager
 {
-
     public static Canvas canvas = null;
     public static EventSystem eventSystem = null;
     /// <summary>
     /// 已经创建的UIView对象引用
     /// </summary>
-    public static Dictionary<string, IView> Views = new Dictionary<string, IView>();
-
-    public override void Awake()
+    public static Dictionary<string, UIView> Views = new Dictionary<string, UIView>();
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    public static void Initialize()
     {
-        base.Awake();
         InitCanvas();
         InitEventSystem();
         InitNode();
+        InitView();
     }
-    public void InitView()
+    private static void InitView()
     {
-        
+        CreateView<MainView>("MainView");
     }
-
-    // 创建新的UI目录
+    /// <summary>
+    /// 初始化画布
+    /// </summary>
     private static void InitCanvas()
     {
         canvas = Object.FindObjectOfType<Canvas>();
@@ -68,7 +65,9 @@ public class UIManager : Singleton<UIManager>
             canvasGO.AddComponent<GraphicRaycaster>();
         }
     }
-    // 创建UIEvent
+    /// <summary>
+    /// 初始化事件系统
+    /// </summary>
     private static void InitEventSystem()
     {
         eventSystem = Object.FindObjectOfType<EventSystem>();
@@ -79,13 +78,15 @@ public class UIManager : Singleton<UIManager>
             eventSystemGO.AddComponent<StandaloneInputModule>();
         }
     }
-    // 获取UI子目录
-    public static void InitNode()
+    /// <summary>
+    /// 初始化节点
+    /// </summary>
+    private static void InitNode()
     {
         // 添加UIViewType
         foreach (UIViewType uiViewType in Enum.GetValues(typeof(UIViewType)))
         {
-            Transform root = canvas.transform.Find(uiViewType.ToString());
+            Transform root = GetSubroot(uiViewType);
             if (root == null)
             {
                 GameObject nodeGO = new GameObject(uiViewType.ToString());
@@ -100,38 +101,42 @@ public class UIManager : Singleton<UIManager>
             }
         }
     }
-    // 获取子目录
+    /// <summary>
+    /// 获取子路径
+    /// </summary>
+    /// <param name="viewType">视图类型</param>
+    /// <returns></returns>
     public static Transform GetSubroot(UIViewType viewType)
     {
-        Transform root = canvas.transform.Find(viewType.ToString());
-        return root;
+        if (viewType == UIViewType.None)
+            return canvas.transform;
+        else
+            return canvas.transform.Find(viewType.ToString());
     }
     /// <summary>
     /// 获得一个名称第一个为name的T
     /// </summary>
-    public static T GetViewByName<T>(string viewName)
-        where T : class, IView
+    public static T GetView<T>(string viewName)
+        where T : UIView
     {
         // 直接使用Firest,数组为空时会引发异常
-        IView view;
+        UIView view;
+        T viewAsT = null;
         if (Views.TryGetValue(viewName, out view))
         {
-            return view as T;
+            viewAsT = view as T;
         }
-        else
-        {
-            return null;
-        }
+        return viewAsT;
     }
     /// <summary>
     /// 显示一个View
     /// </summary>
     /// <param name="viewName"></param>
     /// <param name="action"></param>
-    public static void ShowViewByName<T>(string viewName,Action<T> action = null)
-        where T : MonoBehaviour, IView
+    public static void ShowView<T>(string viewName, Action<T> action = null)
+        where T : UIView
     {
-        var view = GetViewByName<T>(viewName);
+        var view = GetView<T>(viewName);
         if (view != null)
         {
             action?.Invoke(view);
@@ -139,7 +144,7 @@ public class UIManager : Singleton<UIManager>
         }
         else
         {
-            CreateViewByName<T>(viewName, action);
+            MessageBox.Show(string.Format("{0}不存在！", viewName));
         }
     }
     /// <summary>
@@ -147,13 +152,17 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="viewName"></param>
-    public static void HideViewByName<T>(string viewName)
-        where T : MonoBehaviour, IView
+    public static void HideView<T>(string viewName)
+        where T : UIView
     {
-        IView view;
+        UIView view;
         if (Views.TryGetValue(viewName, out view))
         {
             view.Hide();
+        }
+        else
+        {
+            MessageBox.Show(string.Format("{0}不存在！",viewName));
         }
     }
     /// <summary>
@@ -161,29 +170,23 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <param name="viewName"></param>
     /// <returns></returns>
-    private static void CreateViewByName<T>(string viewName, Action<T> action = null)
-        where T : MonoBehaviour, IView
+    private static void CreateView<T>(string viewName)
+        where T : UIView
     {
         string key = $"{typeof(T).ToString()}";
         AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
         handle.Completed += x =>
         {
-            switch (x.Status)
+            if(x.Status == AsyncOperationStatus.Succeeded)
             {
-                case AsyncOperationStatus.None:
-                    break;
-                case AsyncOperationStatus.Succeeded:
-                    T view = x.Result.GetComponent<T>();
-                    action?.Invoke(view);
-                    view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
-                    view.gameObject.name = viewName;
-                    view.Show();
-                    break;
-                case AsyncOperationStatus.Failed:
-                    Debug.LogError($"{key}创建失败！");
-                    break;
-                default:
-                    break;
+                T view = x.Result.GetComponent<T>();
+                view.gameObject.transform.SetParent(GetSubroot(view.UIViewType), false);
+                view.gameObject.name = viewName.ToString();
+                view.transform.localScale = Vector3.zero;
+            }
+            else
+            {
+                MessageBox.Show(string.Format("{0}创建失败！", viewName));
             }
         };
     }
@@ -193,9 +196,9 @@ public class UIManager : Singleton<UIManager>
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
     public static void DestroyView<T>(string name)
-        where T : MonoBehaviour, IView
+        where T : UIView
     {
-        var view = GetViewByName<T>(name);
+        var view = GetView<T>(name);
         Addressables.Release(view);
     }
     /// <summary>
@@ -203,8 +206,8 @@ public class UIManager : Singleton<UIManager>
     /// </summary>
     /// <param name="viewName"></param>
     /// <returns></returns>
-    public static async Task<T> CreateViewAsync<T>(string viewName)
-        where T : MonoBehaviour, IView
+    public static async Task<T> CreateViewAsync<T>(UIViewName viewName)
+        where T : UIView
     {
         string key = $"{typeof(T).ToString()}";
         AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
@@ -214,7 +217,7 @@ public class UIManager : Singleton<UIManager>
         {
             view = handle.Result.GetComponent<T>();
             view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
-            view.gameObject.name = viewName;
+            view.gameObject.name = viewName.ToString();
             view.Hide();
         }
         else

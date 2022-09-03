@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class CsvHelperDemo : MonoBehaviour
@@ -10,11 +11,11 @@ public class CsvHelperDemo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        using (var reader = new StreamReader(@"E:\Project\GitHub_Project\XFrame\Assets\XFrame\CsvHelper\Foo.csv"))
+        using (var reader = new StreamReader(@"E:\Project\GitHub_Project\XFrame\Assets\CsvHelper\Foo.csv"))
         {
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                var records = csv.GetRecords<Foo>();
+                List<Foo> records = csv.GetRecords<Foo>().ToList();
                 foreach (var item in records)
                 {
                     Debug.Log(item.Name);
@@ -28,7 +29,7 @@ public class CsvHelperDemo : MonoBehaviour
             new Foo { Id = 2, Name = "two" },
             new Foo { Id = 3, Name = "three" },
         };
-        using (var writer = new StreamWriter(@"E:\Project\GitHub_Project\XFrame\Assets\XFrame\CsvHelper\Foo1.csv"))
+        using (var writer = new StreamWriter(@"E:\Project\GitHub_Project\XFrame\Assets\CsvHelper\Foo1.csv"))
         using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
         {
             csv.WriteRecords(records1);
