@@ -20,7 +20,7 @@ public class ClampToWindow : MonoBehaviour
 
     void Update()
     {
-        if (null == rt1) { return; }
-        MathEx.SetUIArea(rt1, rect, transform);
+        // if (null == rt1) { return; }
+        // MathEx.SetUIArea(rt1, rect, transform);
     }
 }

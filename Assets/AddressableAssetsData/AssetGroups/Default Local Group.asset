@@ -21,10 +21,7 @@ MonoBehaviour:
     m_Address: UIViewWebCamera
     m_ReadOnly: 0
     m_SerializedLabels: []
-  - m_GUID: 0b5bb4567b748cf41be4685c2d197197
-    m_Address: MainView
-    m_ReadOnly: 0
-    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0a53dd1e01665ab43a6ddd65855dfeca, type: 2}
   m_SchemaSet:

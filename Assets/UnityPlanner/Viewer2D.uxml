@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UnityPlanner/Viewer2D.uss?fileID=7433441132597879392&amp;guid=05845f4ef2d31e74ea0ffd172a497532&amp;type=3#Viewer2D" />
+</ui:UXML>
