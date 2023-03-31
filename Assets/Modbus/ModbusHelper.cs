@@ -9,7 +9,7 @@ using UnityEngine;
 public class ModbusHelper
 {
     /// <summary>
-    /// ¶ÁÈ¡Ò£ĞÅµÄÖµ
+    /// è¯»å–é¥ä¿¡çš„å€¼
     /// </summary>
     public static void ModbusTcpMasterReadCoils()
     {
@@ -29,7 +29,7 @@ public class ModbusHelper
         }
     }
     /// <summary>
-    /// ¶ÁÈ¡Ò£²âµÄÖµ
+    /// è¯»å–é¥æµ‹çš„å€¼
     /// </summary>
     public static void ModbusTcpMasterReadHoldingRegisters()
     {
@@ -69,7 +69,7 @@ public class ModbusHelper
     }
 
     /// <summary>
-    /// »ñÈ¡floatÀàĞÍÊı¾İ
+    /// è·å–floatç±»å‹æ•°æ®
     /// </summary>
     /// <param name="src"></param>
     /// <param name="start"></param>

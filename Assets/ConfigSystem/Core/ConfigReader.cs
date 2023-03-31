@@ -1,4 +1,67 @@
-﻿using System;
+﻿// 作者: 徐振升
+// 更新日期: 2023-3-27
+// 联系方式: QQ359059686
+// 注意事项: 需要平台支持.net反射
+
+// 静态类
+// [ConfigPath(@"Config.ini")]
+// public static class Config
+// {
+//     [ConfigSection("TypeA")]
+//     public static bool TempBoolean { get; set; }
+//     public static int TempInt { get; set; }
+//     public static int TempStr { get; set; }
+//     public static Char TempChar { get; set; }
+//     [ConfigSection("TypeB")]
+//     public static TimeSpan TempTimeSpan { get; set; }
+//     public static DateTime TempDateTime { get; set; }
+//     public static Vector2 TempVector2 { get; set; }
+//     public static Vector3 TempVector3 { get; set; }
+//     public static Color TempColor { get; set; }
+//     
+// }
+// 使用方式
+// ConfigReader.Load();
+// ConfigReader.Save();
+// var b = Config.TempBoolean;
+// var timeSpan = Config.TempTimeSpan;
+
+// 非静态类
+// [ConfigPath(@"LanguageConfig.ini")]
+// public class LanguageConfig
+// {
+//     public enum Language { get; set; }
+//     [ConfigSection("TypeA")]
+//     public bool TempBoolean { get; set; }
+//     public int TempInt { get; set; }
+//     public int TempStr { get; set; }
+//     public Char TempChar { get; set; }
+//     [ConfigSection("TypeB")]
+//     public TimeSpan TempTimeSpan { get; set; }
+//     public DateTime TempDateTime { get; set; }
+//     public Vector2 TempVector2 { get; set; }
+//     public Vector3 TempVector3 { get; set; }
+//     public Color TempColor { get; set; }
+//     
+// }
+// [ConfigPath(@"LanguageMessages.ini")]
+// public class LanguageMessages{}
+// [ConfigPath(@"ChineseMessages.ini")]
+// public class ChineseMessages{}
+// [ConfigPath(@"EnglishMessages.ini")]
+// public class EnglishMessages{}
+
+// var LanguageConfig;
+// if(Config.Language)
+// {
+//      
+// }
+// var LanguageConfig = (LanguageMessages)ConfigReader.ConfigObjects[typeof(ChineseMessages)];
+// var LanguageConfig = (LanguageMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
+//
+
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,7 +69,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-//Language = (StringMessages)ConfigReader.ConfigObjects[typeof(EnglishMessages)];
 /// <summary>
 /// 配置阅读器
 /// </summary>
@@ -22,6 +84,16 @@ public static class ConfigReader
     public static readonly Dictionary<Type, object> ConfigObjects = new Dictionary<Type, object>();
     //配置内容
     private static readonly Dictionary<Type, Dictionary<string, Dictionary<string, string>>> ConfigContents = new Dictionary<Type, Dictionary<string, Dictionary<string, string>>>();
+
+
+    /// <summary>
+    /// 初始化模块
+    /// </summary>
+    public static void Init()
+    {
+        Load();
+        Save();
+    }
     /// <summary>
     /// 加载模块
     /// </summary>

@@ -1,56 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using SaveSystem.Core.Converters;
-using SaveSystem.Core.Settings;
-using SaveSystem.Core.Storage;
+using SaveSystem.Serialisers;
+using SaveSystem.Settings;
+using SaveSystem.Storage;
 
 namespace SaveSystem
 {
     public class SaveSystemRaw
     {
-        private static JsonSerializerSettings setting = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Converters = new List<JsonConverter>()
-            {
-                new ColorConverter(),
-                new QuaternionConverter(),
-                new Matrix4x4Converter(),
-                new Texture2DConverter(),
-                new SpriteConverter(),
-                new Vector2Converter(),
-                new Vector3Converter(),
-                new Vector4Converter()
-            }
-        };
         /// <summary>
-        /// Saves a string directly to the specified file, overwriting if it already exists
+        /// 读取Json文件
         /// </summary>
-        /// <param name="filename">The file to save to</param>
-        /// <param name="content">The string to save</param>
+        public static T Load<T>(string filename)
+        {
+            var json = LoadString(filename, new SaveSystemSettings());
+            return Json.Deserialise<T>(json);
+        }
+        /// <summary>
+        /// 保存Json文件
+        /// </summary>
         public static void Save<T>(string filename, T t)
         {
-            var content = JsonConvert.SerializeObject(t,Formatting.None,setting);
-            SaveString(filename, content, new SaveSystemSettings());
+            var json = Json.Serialise<T>(t);
+            SaveString(filename, json);
         }
         /// <summary>
-        /// Saves a string directly to the specified file, overwriting if it already exists
+        /// 保存Log文件
         /// </summary>
-        /// <param name="filename">The file to save to</param>
-        /// <param name="content">The string to save</param>
-        public static void SaveString(string filename, string content)
+        public static void SaveLog(string log)
         {
-            SaveString(filename, content, new SaveSystemSettings());
+            if (!FileAccess.WriteLog(log))
+            {
+                throw new SaveSystemException("无法将日志写入文件");
+            }
         }
-
         /// <summary>
-        /// Saves a string directly to the specified file using the specified settings, overwriting if it already exists
+        /// 保存Csv文件
         /// </summary>
-        /// <param name="filename">The file to save to</param>
-        /// <param name="content">The string to save</param>
-        /// <param name="settings">Settings</param>
+        public static void SaveCsv<T>(string filename, IEnumerable<T> content)
+        {
+            if (!FileAccess.SaveCsv<T>(filename, content))
+            {
+                throw new SaveSystemException("写入文件失败");
+            }
+        }
+        /// <summary>
+        /// 保存字符串
+        /// </summary>
+        public static void SaveString(string filename, string text)
+        {
+            SaveString(filename, text, new SaveSystemSettings());
+        }
+        /// <summary>
+        /// 保存字符串
+        /// </summary>
         public static void SaveString(string filename, string content, SaveSystemSettings settings)
         {
             string contentToWrite;
@@ -61,10 +64,10 @@ namespace SaveSystem
             }
             catch (Exception e)
             {
-                throw new SaveSystemException("Compression failed", e);
+                throw new SaveSystemException("压缩失败", e);
             }
 
-            // Gzip outputs base64 anyway so no need to do it twice
+            // Gzip 无论如何都会输出 base64，因此无需执行两次
             if (settings.CompressionMode != CompressionMode.Gzip || settings.SecurityMode != SecurityMode.Base64)
             {
                 try
@@ -73,64 +76,39 @@ namespace SaveSystem
                 }
                 catch (Exception e)
                 {
-                    throw new SaveSystemException("Encryption failed", e);
+                    throw new SaveSystemException("加密失败", e);
                 }
             }
 
             if (!FileAccess.SaveString(filename, true, contentToWrite))
             {
-                throw new SaveSystemException("Failed to write to file");
+                throw new SaveSystemException("写入文件失败");
             }
         }
 
-        /// <summary>
-        /// Saves a byte array directly to the specified file, overwriting if it already exists
-        /// </summary>
-        /// <param name="filename">The file to save to</param>
-        /// <param name="content">The byte array to save</param>
         public static void SaveBytes(string filename, byte[] content)
         {
             if (!FileAccess.SaveBytes(filename, true, content))
             {
-                throw new SaveSystemException("Failed to write to file");
+                throw new SaveSystemException("写入文件失败");
             }
         }
-        /// <summary>
-        /// Loads the contents of the specified file into a string
-        /// </summary>
-        /// <param name="filename">The file to load from</param>
-        /// <returns>The contents of the file as a string</returns>
-        public static T Load<T>(string filename)
-        {
-            var json = LoadString(filename, new SaveSystemSettings());
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-        /// <summary>
-        /// Loads the contents of the specified file into a string
-        /// </summary>
-        /// <param name="filename">The file to load from</param>
-        /// <returns>The contents of the file as a string</returns>
+
         public static string LoadString(string filename)
         {
             return LoadString(filename, new SaveSystemSettings());
         }
 
-        /// <summary>
-        /// Loads the contents of the specified file into a string using the specified settings
-        /// </summary>
-        /// <param name="filename">The file to load from</param>
-        /// <param name="settings">Settings</param>
-        /// <returns>The contents of the file as a string</returns>
         public static string LoadString(string filename, SaveSystemSettings settings)
         {
             var content = FileAccess.LoadString(filename, true);
 
             if (content == null)
             {
-                throw new SaveSystemException("Failed to load file");
+                throw new SaveSystemException("加载文件失败");
             }
 
-            // Gzip parses base64 anyway so no need to do it twice
+            // Gzip 无论如何都会解析 base64，所以不需要解析两次
             if (settings.CompressionMode != CompressionMode.Gzip || settings.SecurityMode != SecurityMode.Base64)
             {
                 try
@@ -139,7 +117,7 @@ namespace SaveSystem
                 }
                 catch (Exception e)
                 {
-                    throw new SaveSystemException("Decryption failed", e);
+                    throw new SaveSystemException("解密失败", e);
                 }
             }
 
@@ -149,63 +127,43 @@ namespace SaveSystem
             }
             catch (Exception e)
             {
-                throw new SaveSystemException("Decompression failed", e);
+                throw new SaveSystemException("解压失败", e);
             }
 
             return content;
         }
+        public static void LoadCsv<T>(string filename, Action<List<T>> action)
+        {
+            FileAccess.LoadCsv<T>(filename, action);
+        }
 
-        /// <summary>
-        /// Loads the contents of the specified file into a byte array
-        /// </summary>
-        /// <param name="filename">The file to load from</param>
-        /// <returns>The contents of the file as a byte array</returns>
         public static byte[] LoadBytes(string filename)
         {
             byte[] content = FileAccess.LoadBytes(filename, true);
 
             if (content == null)
             {
-                throw new SaveSystemException("Failed to load file");
+                throw new SaveSystemException("加载文件失败");
             }
 
             return content;
         }
 
-        /// <summary>
-        /// Loads an asset stored in a resources folder
-        /// </summary>
-        /// <typeparam name="T">The type of asset to load</typeparam>
-        /// <param name="filename">The path of the asset to load, relative to the Assets folder and without an extension</param>
-        /// <returns>The specified asset</returns>
         public static T LoadResource<T>(string filename) where T : UnityEngine.Object
         {
             return UnityEngine.Resources.Load<T>(filename);
         }
 
-        /// <summary>
-        /// Deletes the specified file if it exists
-        /// </summary>
-        /// <param name="filename">The file to delete</param>
         public static void Delete(string filename)
         {
             FileAccess.Delete(filename, true);
         }
 
-        /// <summary>
-        /// Determines if the specified file exists
-        /// </summary>
-        /// <param name="filename">The file to check</param>
-        /// <returns>Does the file exist</returns>
         public static bool Exists(string filename)
         {
             return FileAccess.Exists(filename, true);
         }
 
-        /// <summary>
-        /// Gets the names of all files that have been saved
-        /// </summary>
-        /// <returns>A collection of file names</returns>
         public static IEnumerable<string> GetAllFiles()
         {
             return FileAccess.Files(false);

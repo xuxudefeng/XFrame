@@ -1,20 +1,19 @@
-﻿
-namespace SaveSystem
+﻿namespace SaveSystem
 {
     public class SaveSystemSettings
     {
         /// <summary>
-        /// The type of encryption to use on the data
+        /// 对数据使用的加密类型
         /// </summary>
         public SecurityMode SecurityMode { get; set; }
 
         /// <summary>
-        /// The type of compression to use on the data
+        /// 对数据使用的压缩类型
         /// </summary>
         public CompressionMode CompressionMode { get; set; }
 
         /// <summary>
-        /// If aes is selected as the security mode specify a password to use as the encryption key
+        /// 如果选择 aes 作为安全模式，请指定一个密码用作加密密钥
         /// </summary>
         public string Password { get; set; }
 

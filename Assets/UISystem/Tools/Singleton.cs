@@ -3,8 +3,6 @@
 public class Singleton<T> : MonoBehaviour
     where T : MonoBehaviour
 {
-    // 检查单例是否被销毁
-    private static bool m_ShuttingDown = false;
     private static object m_Lock = new object();
     private static T m_Instance;
     /// <summary>
@@ -14,13 +12,6 @@ public class Singleton<T> : MonoBehaviour
     {
         get
         {
-            if (m_ShuttingDown)
-            {
-                Debug.LogWarning("单例实例 '" + typeof(T) +
-                    "' 已销毁，返回null");
-                return null;
-            }
-
             lock (m_Lock)
             {
                 if (m_Instance == null)
@@ -44,13 +35,6 @@ public class Singleton<T> : MonoBehaviour
 
     public static void Initialize()
     {
-        Debug.Log($"手动初始化{typeof(T)}");
-        if (m_ShuttingDown)
-        {
-            Debug.LogWarning("单例实例 '" + typeof(T) +
-                "' 已销毁，返回null");
-        }
-
         lock (m_Lock)
         {
             if (m_Instance == null)
@@ -73,16 +57,5 @@ public class Singleton<T> : MonoBehaviour
     {
         // 禁止加载场景后销毁
         DontDestroyOnLoad(gameObject);
-    }
-
-    private void OnApplicationQuit()
-    {
-        m_ShuttingDown = true;
-    }
-
-
-    private void OnDestroy()
-    {
-        m_ShuttingDown = true;
     }
 }
