@@ -6,10 +6,8 @@
 //------------------------------------------------------------
 
 using GameFramework;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using UnityEngine;
+using JsonNet;
 
 namespace UnityGameFramework.Runtime
 {
@@ -18,20 +16,6 @@ namespace UnityGameFramework.Runtime
     /// </summary>
     public class NewtonsoftJsonHelper : Utility.Json.IJsonHelper
     {
-        private static readonly JsonSerializerSettings _settings = new JsonSerializerSettings()
-        {
-            Converters = new List<JsonConverter>()
-            {
-                new ColorConverter(),
-                new QuaternionConverter(),
-                new Matrix4x4Converter(),
-                new Texture2DConverter(),
-                new SpriteConverter(),
-                new Vector2Converter(),
-                new Vector3Converter(),
-                new Vector4Converter()
-            }
-        };
         /// <summary>
         /// 将对象序列化为 JSON 字符串。
         /// </summary>
@@ -39,7 +23,7 @@ namespace UnityGameFramework.Runtime
         /// <returns>序列化后的 JSON 字符串。</returns>
         public string ToJson(object obj)
         {
-            return JsonConvert.SerializeObject(obj,_settings);
+            return Json.Serialise(obj);
         }
 
         /// <summary>
@@ -50,7 +34,7 @@ namespace UnityGameFramework.Runtime
         /// <returns>反序列化后的对象。</returns>
         public T ToObject<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json,_settings);
+            return Json.Deserialise<T>(json);
         }
 
         /// <summary>
@@ -61,7 +45,7 @@ namespace UnityGameFramework.Runtime
         /// <returns>反序列化后的对象。</returns>
         public object ToObject(Type objectType, string json)
         {
-            return JsonConvert.DeserializeObject(json,objectType,_settings);
+            return Json.Deserialise(objectType,json);
         }
     }
 }
