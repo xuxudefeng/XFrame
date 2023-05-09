@@ -35,6 +35,8 @@ public class Singleton<T> : MonoBehaviour
 
     public static void Initialize()
     {
+        Debug.Log($"手动初始化{typeof(T)}");
+ 
         lock (m_Lock)
         {
             if (m_Instance == null)
