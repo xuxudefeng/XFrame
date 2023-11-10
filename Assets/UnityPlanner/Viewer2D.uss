@@ -1,9 +1,0 @@
-#viewer2d {
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-
-Button {
-    width: 50px;
-    height: 50px;
-}
