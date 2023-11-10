@@ -1,12 +1,12 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
+﻿
+
+
+
+
+
 // 此文件由工具自动生成，请勿直接修改。
 // 生成时间：2021-06-16 21:54:35.638
-//------------------------------------------------------------
+
 
 using GameFramework;
 using System;

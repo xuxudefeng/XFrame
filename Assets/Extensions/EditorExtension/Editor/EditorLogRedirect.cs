@@ -24,7 +24,7 @@ namespace UGFExtensions.Editor
         }
 
         //替换成你自己的封装类地址
-        private const string DEBUGERFILEPATH = "Assets/GameFramework/Scripts/Runtime/Utility/DefaultLogHelper.cs";
+        private const string DEBUGERFILEPATH = "Assets/UnityGameFramework/Scripts/Runtime/Utility/DefaultLogHelper.cs";
         private int m_DebuggerFileInstanceId;
         private Type m_ConsoleWindowType = null;
         private FieldInfo m_ActiveTextInfo;
