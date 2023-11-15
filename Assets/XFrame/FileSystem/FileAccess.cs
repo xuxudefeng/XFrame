@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using UnityGameFramework.Runtime;
+using UnityEngine;
 
 namespace SaveSystem
 {
@@ -47,7 +46,7 @@ namespace SaveSystem
             }
             catch (Exception ex)
             {
-                Log.Debug(ex.ToString());
+                Debug.Log(ex.ToString());
             }
             return false;
         }

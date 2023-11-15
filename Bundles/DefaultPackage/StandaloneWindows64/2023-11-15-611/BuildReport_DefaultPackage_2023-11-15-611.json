@@ -1,0 +1,127 @@
+{
+    "Summary": {
+        "YooVersion": "",
+        "UnityVersion": "2021.3.22f1",
+        "BuildDate": "2023/11/15 10:11:47",
+        "BuildSeconds": 8,
+        "BuildTarget": 19,
+        "BuildPipeline": 0,
+        "BuildMode": 0,
+        "BuildPackageName": "DefaultPackage",
+        "BuildPackageVersion": "2023-11-15-611",
+        "EnableAddressable": true,
+        "UniqueBundleName": false,
+        "EncryptionServicesClassName": "YooAsset.Editor.EncryptionNone",
+        "OutputNameStyle": 1,
+        "CompressOption": 2,
+        "DisableWriteTypeTree": false,
+        "IgnoreTypeTreeChanges": true,
+        "AssetFileTotalCount": 5,
+        "MainAssetTotalCount": 5,
+        "AllBundleTotalCount": 2,
+        "AllBundleTotalSize": 11508,
+        "EncryptedBundleTotalCount": 0,
+        "EncryptedBundleTotalSize": 0,
+        "RawBundleTotalCount": 0,
+        "RawBundleTotalSize": 0
+    },
+    "AssetInfos": [
+        {
+            "Address": "about",
+            "AssetPath": "Assets/AssetRaw/Configs/about.txt",
+            "AssetGUID": "ba11f0707eb5f814392cbf12498aba94",
+            "AssetTags": [
+                "Configs"
+            ],
+            "MainBundleName": "assets_assetraw_configs.bundle",
+            "MainBundleSize": 1222,
+            "DependBundles": [],
+            "DependAssets": []
+        },
+        {
+            "Address": "BattleCore.Runtime.dll",
+            "AssetPath": "Assets/AssetRaw/DLL/BattleCore.Runtime.dll.bytes",
+            "AssetGUID": "e2076526d37c9f04cbb53b99a9def55a",
+            "AssetTags": [
+                "DLL"
+            ],
+            "MainBundleName": "assets_assetraw_dll.bundle",
+            "MainBundleSize": 10286,
+            "DependBundles": [],
+            "DependAssets": []
+        },
+        {
+            "Address": "GameBase.dll",
+            "AssetPath": "Assets/AssetRaw/DLL/GameBase.dll.bytes",
+            "AssetGUID": "670de3d9fbfeda349a8a5a391170dbeb",
+            "AssetTags": [
+                "DLL"
+            ],
+            "MainBundleName": "assets_assetraw_dll.bundle",
+            "MainBundleSize": 10286,
+            "DependBundles": [],
+            "DependAssets": []
+        },
+        {
+            "Address": "GameLogic.dll",
+            "AssetPath": "Assets/AssetRaw/DLL/GameLogic.dll.bytes",
+            "AssetGUID": "ed02530710afffd4d8c1411a8ba96221",
+            "AssetTags": [
+                "DLL"
+            ],
+            "MainBundleName": "assets_assetraw_dll.bundle",
+            "MainBundleSize": 10286,
+            "DependBundles": [],
+            "DependAssets": []
+        },
+        {
+            "Address": "GameProto.dll",
+            "AssetPath": "Assets/AssetRaw/DLL/GameProto.dll.bytes",
+            "AssetGUID": "5d462004b437bff41b42186adec8892a",
+            "AssetTags": [
+                "DLL"
+            ],
+            "MainBundleName": "assets_assetraw_dll.bundle",
+            "MainBundleSize": 10286,
+            "DependBundles": [],
+            "DependAssets": []
+        }
+    ],
+    "BundleInfos": [
+        {
+            "BundleName": "assets_assetraw_configs.bundle",
+            "FileName": "73ff91de674521436919863c4c2d045a.bundle",
+            "FileHash": "73ff91de674521436919863c4c2d045a",
+            "FileCRC": "5dc0665a",
+            "FileSize": 1222,
+            "IsRawFile": false,
+            "LoadMethod": 0,
+            "Tags": [
+                "Configs"
+            ],
+            "ReferenceIDs": [],
+            "AllBuiltinAssets": [
+                "Assets/AssetRaw/Configs/about.txt"
+            ]
+        },
+        {
+            "BundleName": "assets_assetraw_dll.bundle",
+            "FileName": "a46ce8b1ae3ff0342862b4327e65f0f3.bundle",
+            "FileHash": "a46ce8b1ae3ff0342862b4327e65f0f3",
+            "FileCRC": "3d70c794",
+            "FileSize": 10286,
+            "IsRawFile": false,
+            "LoadMethod": 0,
+            "Tags": [
+                "DLL"
+            ],
+            "ReferenceIDs": [],
+            "AllBuiltinAssets": [
+                "Assets/AssetRaw/DLL/BattleCore.Runtime.dll.bytes",
+                "Assets/AssetRaw/DLL/GameBase.dll.bytes",
+                "Assets/AssetRaw/DLL/GameLogic.dll.bytes",
+                "Assets/AssetRaw/DLL/GameProto.dll.bytes"
+            ]
+        }
+    ]
+}

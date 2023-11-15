@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 2475562036
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: assets_assetraw_configs.bundle
+      Dependencies: {}
+    Info_1:
+      Name: assets_assetraw_dll.bundle
+      Dependencies: {}

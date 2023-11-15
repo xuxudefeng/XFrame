@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ProjectInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Surum="2">
+  <CreateRepairPatch>true</CreateRepairPatch>
+  <CreateInstallerPatch>true</CreateInstallerPatch>
+  <CreateIncrementalPatch>true</CreateIncrementalPatch>
+  <CreateIncrementalPatchesFromEachPreviousVersionToNewVersion>false</CreateIncrementalPatchesFromEachPreviousVersionToNewVersion>
+  <DontCreatePatchFilesForUnchangedFiles>false</DontCreatePatchFilesForUnchangedFiles>
+  <BinaryDiffQuality>3</BinaryDiffQuality>
+  <CompressionFormatRepairPatch>LZMA</CompressionFormatRepairPatch>
+  <CompressionFormatInstallerPatch>LZMA</CompressionFormatInstallerPatch>
+  <CompressionFormatIncrementalPatch>LZMA</CompressionFormatIncrementalPatch>
+  <BaseDownloadURL>http://192.168.1.16/SPPatcher/LauncherProject/Output/</BaseDownloadURL>
+  <MaintenanceCheckURL />
+  <IgnoredPaths>
+    <string>*spt_logs.txt</string>
+    <string>*output_log.txt</string>
+    <string>MainApp/</string>
+  </IgnoredPaths>
+  <IsSelfPatchingApp>true</IsSelfPatchingApp>
+  <Name>XFrame</Name>
+</ProjectInfo>

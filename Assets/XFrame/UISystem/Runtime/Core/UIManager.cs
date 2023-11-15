@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using System.Threading.Tasks;
-using GameFramework;
 
 /// <summary>
 ///  UI管理
@@ -135,26 +131,26 @@ public class UIManager : Singleton<UIManager>
         }
         return null;
     }
-    /// <summary>
-    /// 显示一个View
-    /// </summary>
-    /// <param name="viewName"></param>
-    /// <param name="action"></param>
-    public void ShowView<T>(string viewName, Action<T> action = null)
-        where T : UIView
-    {
-        var view = GetView<T>(viewName);
-        if (view != null)
-        {
-            action?.Invoke(view);
-            view.Show();
-        }
-        else
-        {
-            InstantiateView<T>(viewName, action);
-        }
+    ///// <summary>
+    ///// 显示一个View
+    ///// </summary>
+    ///// <param name="viewName"></param>
+    ///// <param name="action"></param>
+    //public void ShowView<T>(string viewName, Action<T> action = null)
+    //    where T : UIView
+    //{
+    //    var view = GetView<T>(viewName);
+    //    if (view != null)
+    //    {
+    //        action?.Invoke(view);
+    //        view.Show();
+    //    }
+    //    else
+    //    {
+    //        InstantiateView<T>(viewName, action);
+    //    }
 
-    }
+    //}
     /// <summary>
     /// 关闭View
     /// </summary>
@@ -169,74 +165,74 @@ public class UIManager : Singleton<UIManager>
             view.GetComponent<UIView>().Hide();
         }
     }
-    /// <summary>
-    /// 实例化页面T
-    /// </summary>
-    /// <param name="viewName"></param>
-    /// <returns></returns>
-    public void InstantiateView<T>(string viewName, Action<T> action = null)
-        where T : UIView
-    {
-        string key = $"{typeof(T).ToString()}";
-        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
-        handle.Completed += x =>
-        {
-            switch (x.Status)
-            {
-                case AsyncOperationStatus.None:
-                    Debug.Log("1");
-                    break;
-                case AsyncOperationStatus.Succeeded:
-                    T view = x.Result.GetComponent<T>();
-                    action?.Invoke(view);
-                    view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
-                    view.gameObject.name = viewName;
-                    view.Show();
-                    break;
-                case AsyncOperationStatus.Failed:
-                    Debug.LogError($"{key}创建失败！");
-                    break;
-                default:
-                    break;
-            }
-        };
-    }
-    /// <summary>
-    /// 实例化页面T
-    /// </summary>
-    /// <param name="viewName"></param>
-    /// <returns></returns>
-    public async Task<T> CreateView<T>(string viewName)
-        where T : UIView
-    {
-        string key = $"{typeof(T).ToString()}";
-        AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
-        await handle.Task;
-        T view = null;
-        if (handle.Status == AsyncOperationStatus.Succeeded)
-        {
-            view = handle.Result.GetComponent<T>();
-            view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
-            view.gameObject.name = viewName;
-            view.Hide();
-        }
-        else
-        {
-            Debug.LogError($"{key}创建失败！");
-        }
-        return view;
-    }
-    /// <summary>
-    /// 释放页面T
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="name"></param>
-    public void ReleaseView<T>(string name)
-        where T : UIView
-    {
-        var view = GetView<T>(name);
-        Addressables.Release(view);
-    }
+    ///// <summary>
+    ///// 实例化页面T
+    ///// </summary>
+    ///// <param name="viewName"></param>
+    ///// <returns></returns>
+    //public void InstantiateView<T>(string viewName, Action<T> action = null)
+    //    where T : UIView
+    //{
+    //    string key = $"{typeof(T).ToString()}";
+    //    AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
+    //    handle.Completed += x =>
+    //    {
+    //        switch (x.Status)
+    //        {
+    //            case AsyncOperationStatus.None:
+    //                Debug.Log("1");
+    //                break;
+    //            case AsyncOperationStatus.Succeeded:
+    //                T view = x.Result.GetComponent<T>();
+    //                action?.Invoke(view);
+    //                view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
+    //                view.gameObject.name = viewName;
+    //                view.Show();
+    //                break;
+    //            case AsyncOperationStatus.Failed:
+    //                Debug.LogError($"{key}创建失败！");
+    //                break;
+    //            default:
+    //                break;
+    //        }
+    //    };
+    //}
+    ///// <summary>
+    ///// 实例化页面T
+    ///// </summary>
+    ///// <param name="viewName"></param>
+    ///// <returns></returns>
+    //public async Task<T> CreateView<T>(string viewName)
+    //    where T : UIView
+    //{
+    //    string key = $"{typeof(T).ToString()}";
+    //    AsyncOperationHandle<GameObject> handle = Addressables.InstantiateAsync(key, canvas.transform);
+    //    await handle.Task;
+    //    T view = null;
+    //    if (handle.Status == AsyncOperationStatus.Succeeded)
+    //    {
+    //        view = handle.Result.GetComponent<T>();
+    //        view.gameObject.transform.SetParent(canvas.transform.Find(view.UIViewType.ToString()), false);
+    //        view.gameObject.name = viewName;
+    //        view.Hide();
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError($"{key}创建失败！");
+    //    }
+    //    return view;
+    //}
+    ///// <summary>
+    ///// 释放页面T
+    ///// </summary>
+    ///// <typeparam name="T"></typeparam>
+    ///// <param name="name"></param>
+    //public void ReleaseView<T>(string name)
+    //    where T : UIView
+    //{
+    //    var view = GetView<T>(name);
+    //    Addressables.Release(view);
+    //}
 }
 
 
